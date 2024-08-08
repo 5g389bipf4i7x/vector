@@ -19,12 +19,15 @@ def two_point():
         input_pointb = input('請輸入點2的座標(以,或空白分隔): ')
         try:
             pointa = [int(ipa) for ipa in re.split(r'[\s,]+',input_pointa)]
-            pointb = [int(ipb) for ipb in re.split(r'[\s,]+',input_pointb)]
+            pointb = [int(ipb) for ipb in re.split(r'[\s,]+',input_pointb)] #拆分
             if len(pointa) != 3 or len(pointb) != 3:
-                raise ValueError
-            distance = float(distance)
-            distance = math.sqrt(((pointa[0]-pointb[0])**2)+((pointa[1]-pointb[1])**2)+((pointa[2]-pointb[2])**2))
-            print(distance)
+                raise IndexError
+            dis = ((pointa[0]-pointb[0])**2)+((pointa[1]-pointb[1])**2)+((pointa[2]-pointb[2])**2)
+            distance = math.sqrt(dis)#計算距離
+            if distance.is_integer():
+                print(distance)
+            else:
+                print('√'+str(dis))
             break
         except (IndexError,ValueError,TypeError):
             print('請檢查輸入值是否正確，是否有包含三軸且使用,或空白鍵分隔')
@@ -43,10 +46,10 @@ def three_point():
             pointa = [int(ipa) for ipa in re.split(r'[\s,]+',input_pointa)]
             pointb = [int(ipb) for ipb in re.split(r'[\s,]+',input_pointb)]
             pointc = [int(ipc) for ipc in re.split(r'[\s,]+',input_pointc)]
-            vecab = np.array([pointb[0]-pointa[0],pointb[1]-pointa[1],pointb[2]-pointa[2]]) #取得ab向量
-            vecac = np.array([pointc[0]-pointa[0],pointc[1]-pointa[1],pointc[2]-pointa[2]]) #取得ac向量
             if len(pointa) != 3 or len(pointb) != 3 or len(pointc) != 3: #檢查輸入值是否少於或多於3個
                 raise IndexError
+            vecab = np.array([pointb[0]-pointa[0],pointb[1]-pointa[1],pointb[2]-pointa[2]]) #取得ab向量
+            vecac = np.array([pointc[0]-pointa[0],pointc[1]-pointa[1],pointc[2]-pointa[2]]) #取得ac向量
             primaryNabc = (np.cross(vecab,vecac)) #ab、ac向量外積
             if np.array_equal(primaryNabc, [0,0,0]):
                 print('三點共線，無法判斷平面')
@@ -61,8 +64,7 @@ def three_point():
                 yplus =''
             if Nabc[2]< 0 :
                 zplus =''
-            print('平面垂直向量為 ('+str(int(Nabc[0]))+','+str(int(Nabc[1]))+','+str(int(Nabc[2]))+')\n平面方程式為 '+
-                str(int(Nabc[0]))+'x'+yplus+str(int(Nabc[1]))+'y'+zplus+str(int(Nabc[2]))+'z = '+str(int(Nabc[0]*pointa[0]+Nabc[1]*pointa[1]+Nabc[2]*pointa[2])))
+            print('平面垂直向量為 ('+str(int(Nabc[0]))+','+str(int(Nabc[1]))+','+str(int(Nabc[2]))+')\n平面方程式為 '+str(int(Nabc[0]))+'x'+yplus+str(int(Nabc[1]))+'y'+zplus+str(int(Nabc[2]))+'z = '+str(int(Nabc[0]*pointa[0]+Nabc[1]*pointa[1]+Nabc[2]*pointa[2])))
             break
         except (IndexError,ValueError,TypeError):
             print('您輸入的值有誤，請檢查點是否包含三軸且使用,或空白鍵分隔')
@@ -76,9 +78,9 @@ def point_normalvrctor():
         input_normal_vector = input('請輸入垂直平面的向量(以,或空白分隔): ')
         try:
             point = [int(ip) for ip in re.split(r'[\s,]+',input_point)]
-            n = np.array([int(inv) for inv in re.split(r'[\s,]+',input_normal_vector)])
             if len(point) != 3 or len(n) != 3: #檢查輸入值是否少於或多於3個
                 raise IndexError
+            n = np.array([int(inv) for inv in re.split(r'[\s,]+',input_normal_vector)])
             if np.array_equal(n,[0,0,0]) :
                 print('零向量無法計算平面')
                 break
@@ -106,18 +108,18 @@ def two_point_vector():
         input_pointb = input("請輸入點2的座標(以,或空白分隔): ")
         input_vector = input('請輸入向量的值，以,或空白分隔: ')
         try:
-            pointa = [int(ipa) for ipa in re.split(r'[\s,]+', input_pointa)]
+            pointa = [int(ipa) for ipa in re.split(r'[\s,]+',input_pointa)]
             pointb = [int(ipb) for ipb in re.split(r'[\s,]+',input_pointb)]
-            vecab = np.array([pointb[0]-pointa[0],pointb[1]-pointa[1],pointb[2]-pointa[2]]) #取得ab向量
-            v = np.array([int(iv) for iv in re.split(r'[\s,]+',input_vector)]) #將轉成list(int)的值變成向量值
             if len(pointa) != 3 or len(pointb) != 3 or len(v) != 3:
                 raise IndexError
-            if np.array_equal(v,[0,0,0]):
-                print('零向量無法計算平面')
-                break
             if input_pointa == input_pointb:
                 print('不可有相同的點\n')
                 continue
+            vecab = np.array([pointb[0]-pointa[0],pointb[1]-pointa[1],pointb[2]-pointa[2]]) #取得ab向量
+            v = np.array([int(iv) for iv in re.split(r'[\s,]+',input_vector)]) #將轉成list(int)的值變成向量值
+            if np.array_equal(v,[0,0,0]):
+                print('零向量無法計算平面')
+                break
             primaryNabv = (np.cross(vecab,v))
             if np.array_equal (primaryNabv,[0,0,0]):
                 print('此兩點的向量與您提供的向量相同，無法判斷平面')
@@ -132,8 +134,7 @@ def two_point_vector():
                 yplus =''
             if N2pv[2]< 0 :
                 zplus =''
-            print('平面垂直向量為 ('+str(int(N2pv[0]))+','+str(int(N2pv[1]))+','+str(int(N2pv[2]))+')\n平面方程式為 '+
-                str(int(N2pv[0]))+'x'+yplus+str(int(N2pv[1]))+'y'+zplus+str(int(N2pv[2]))+'z = '+str(int(N2pv[0]*pointa[0]+N2pv[1]*pointa[1]+N2pv[2]*pointa[2])))
+            print('平面垂直向量為 ('+str(int(N2pv[0]))+','+str(int(N2pv[1]))+','+str(int(N2pv[2]))+')\n平面方程式為 '+str(int(N2pv[0]))+'x'+yplus+str(int(N2pv[1]))+'y'+zplus+str(int(N2pv[2]))+'z = '+str(int(N2pv[0]*pointa[0]+N2pv[1]*pointa[1]+N2pv[2]*pointa[2])))
             break
         except (IndexError,ValueError,TypeError):
             print('您輸入的值有誤，請檢查點和向量有無包含三軸取且使用,或空白鍵分隔')
@@ -157,7 +158,7 @@ def area_of_parallelongram():
             if np.array_equal(crossab,[0,0,0]):
                 print('兩向量平行，無法計算面積')
                 break
-            area = np.absolute(veca[0]*vecb[1]-veca[1]*vecb[0])/2
+            area = np.linalg.norm(crossab)
             print('面積為: ',area)
             break
         except (IndexError,ValueError,TypeError):
@@ -182,7 +183,7 @@ def area_of_triangle():
             if np.array_equal(crossab,[0,0,0]):
                 print('兩向量平行，無法計算面積')
                 break
-            area = np.absolute(veca[0]*vecb[1]-veca[1]*vecb[0])/2
+            area = np.linalg.norm(crossab)/2
             print('三角形面積為: ',area)
             break
         except (IndexError,ValueError,TypeError):
@@ -219,7 +220,6 @@ def volume_of_parallelepiped():
 
     
 
-#A點-反射點-B點(鏡面方程式or反射點)共兩組程式
 #此求鏡面方程式
 def mirror():
     while True:
@@ -261,9 +261,6 @@ def mirror():
             n = normal_vec[0]*pointb[0]+normal_vec[1]*pointb[1]+normal_vec[2]*pointb[2]
             print(str(normal_vec[0])+'x'+yplus+str(normal_vec[1])+'y'+zplus+str(normal_vec[2])+'z = '+str(n))
             break
-            #這裡設計方程式 將反射點帶入檢查會不會在方程式上且在兩點間
-            #if np.array_equal(vecab,vecbc):
-            #    print('三點共線')
         except(IndexError,ValueError,TypeError):
             print('您輸入的值有誤，請檢查點和向量有無包含三軸值且使用,或空白鍵分隔')
             continue
@@ -299,13 +296,13 @@ def two_eqation_n():
 def distance_point_flat():
     while True:
         input_point = input('請輸入點座標(以,或空白分隔): ')
-        input_line = input('請輸入平面一般式(係數若為1跟0仍需打出係數 且常數放左邊)\n: ')
+        input_flat = input('請輸入平面一般式(係數若為1跟0仍需打出係數 且常數放左邊)\n: ')
         try:
             point = [int(ip) for ip in re.split(r'[\s,]+',input_point)]
             if len(point) != 3:
                 raise IndexError
-            line = re.split(r'[xyz=]+',input_line)
-            coef = [int(il) for il in line[:4]]
+            flat = re.split(r'[xyz=]+',input_flat)
+            coef = [int(il) for il in flat[:4]]
             num = abs(point[0]*coef[0]+point[1]*coef[1]+point[2]*coef[2]+coef[3])
             den = math.sqrt(coef[0]**2+coef[1]**2+coef[2]**2)
             if den.is_integer():
@@ -315,9 +312,9 @@ def distance_point_flat():
                 else:
                     print(str(num)+'/'+str(int(den)))
             else:
-                distance = str(num)+'/'+'√￣'+str(coef[0]**2+coef[1]**2+coef[2]**2)
+                distance = str(num)+'/'+'√'+str(coef[0]**2+coef[1]**2+coef[2]**2)
                 print(distance)
             break
         except (IndexError,ValueError,TypeError):
-            print('您輸入的值有誤，請檢查後再次輸入\n點座標: ',input_point,'\n平面一般式: ',input_line)
+            print('您輸入的值有誤，請檢查後再次輸入\n點座標: ',input_point,'\n平面一般式: ',input_flat)
             continue    
