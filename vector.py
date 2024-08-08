@@ -7,20 +7,16 @@ import math
     一點一垂直向量
     兩點一平面向量
     兩向量求公垂線方程式
-    /平行六面體體積(須給3向量)
-    /點-鏡面點-反射到點(求鏡面方程式/反射點)
-
+    平行六面體體積(須給3向量)
+    點-鏡面點-反射到點(求鏡面方程式)
     兩方程式求法向量
-    
-    點面距/平行線距/平行面距(方程式)
-
-    /點-方程式距離
+    點面距
 '''
 #兩點距離
 def two_point():
     while True:
-        input_pointa = input('請輸入點1的三個值(以,或空白分隔): ')
-        input_pointb = input('請輸入點2的三個值(以,或空白分隔): ')
+        input_pointa = input('請輸入點1的座標(以,或空白分隔): ')
+        input_pointb = input('請輸入點2的座標(以,或空白分隔): ')
         try:
             pointa = [int(ipa) for ipa in re.split(r'[\s,]+',input_pointa)]
             pointb = [int(ipb) for ipb in re.split(r'[\s,]+',input_pointb)]
@@ -37,9 +33,9 @@ def two_point():
 #三點求一平面及公垂向量
 def three_point():
     while True:
-        input_pointa = input("請輸入點1的三個值(以,或空白分隔): ")
-        input_pointb = input("請輸入點2的三個值(以,或空白分隔): ")
-        input_pointc = input("請輸入點3的三個值(以,或空白分隔): ")
+        input_pointa = input("請輸入點1的座標(以,或空白分隔): ")
+        input_pointb = input("請輸入點2的座標(以,或空白分隔): ")
+        input_pointc = input("請輸入點3的座標(以,或空白分隔): ")
         if input_pointa == input_pointb or input_pointa == input_pointc or input_pointb ==input_pointc:
             print('不可有相同的點\n')
             break
@@ -106,11 +102,9 @@ def point_normalvrctor():
 #平面上兩點及一向量求平面
 def two_point_vector():
     while True:
-        input_pointa = input("請輸入點1的三個值(以,或空白分隔): ")
-        input_pointb = input("請輸入點2的三個值(以,或空白分隔): ")
+        input_pointa = input("請輸入點1的座標(以,或空白分隔): ")
+        input_pointb = input("請輸入點2的座標(以,或空白分隔): ")
         input_vector = input('請輸入向量的值，以,或空白分隔: ')
-        
-
         try:
             pointa = [int(ipa) for ipa in re.split(r'[\s,]+', input_pointa)]
             pointb = [int(ipb) for ipb in re.split(r'[\s,]+',input_pointb)]
@@ -227,85 +221,103 @@ def volume_of_parallelepiped():
 
 #A點-反射點-B點(鏡面方程式or反射點)共兩組程式
 #此求鏡面方程式
-while True:
-    input_pointa = input('請輸入出發點: ')
-    input_pointb = input('請輸入反射點: ')
-    input_pointc = input('請輸入終點: ')
-    try:
-        pointa = [int(ipa) for ipa in re.split(r'[\s,]+',input_pointa)]
-        pointb = [int(ipb) for ipb in re.split(r'[\s,]+',input_pointb)]
-        pointc = [int(ipc) for ipc in re.split(r'[\s,]+',input_pointc)]
-        if len(pointa) != 3 or len(pointb) != 3 or len(pointc) != 3:
-            raise IndexError
-        if pointa == pointb or pointb == pointc or pointa == pointc:
-            print('有兩點相同，請檢查輸入值是否有誤')
+def mirror():
+    while True:
+        input_pointa = input('請輸入出發點座標: ')
+        input_pointb = input('請輸入反射點座標: ')
+        input_pointc = input('請輸入終點座標: ')
+        try:
+            pointa = [int(ipa) for ipa in re.split(r'[\s,]+',input_pointa)]
+            pointb = [int(ipb) for ipb in re.split(r'[\s,]+',input_pointb)]
+            pointc = [int(ipc) for ipc in re.split(r'[\s,]+',input_pointc)]
+            if len(pointa) != 3 or len(pointb) != 3 or len(pointc) != 3:
+                raise IndexError
+            if pointa == pointb or pointb == pointc or pointa == pointc:
+                print('有兩點相同，請檢查輸入值是否有誤')
+                continue
+            vecab = np.array([pointb[0]-pointa[0],pointb[1]-pointa[1],pointb[2]-pointa[2]])
+            vecbc = np.array([pointc[0]-pointb[0],pointc[1]-pointb[1],pointc[2]-pointb[2]])
+            distanceab = math.sqrt(((pointb[0]-pointa[0])**2)+((pointb[1]-pointa[1])**2)+((pointb[2]-pointa[2])**2))
+            distancebc = math.sqrt(((pointc[0]-pointb[0])**2)+((pointc[1]-pointb[1])**2)+((pointc[2]-pointb[2])**2))
+            if distanceab == 0 or distancebc == 0:
+                print('兩點距離不能為0')
+                continue
+            lcm = math.lcm(int(distanceab),int(distancebc)) 
+            m1 = lcm//distanceab
+            m2 = lcm//distancebc
+            mvecab = vecab*m1
+            mvecbc = vecbc*m2
+            normal_vec = mvecab+mvecbc
+            if normal_vec[0] < 0:
+                normal_vec = -normal_vec
+            cfpv = math.gcd(normal_vec[0],normal_vec[1],normal_vec[2])
+            npv = normal_vec//cfpv
+            yplus = '+'
+            zplus = '+'
+            if npv[1]<0 :
+                yplus = ''
+            if npv[2]<0 :
+                zplus = ''
+            n = normal_vec[0]*pointb[0]+normal_vec[1]*pointb[1]+normal_vec[2]*pointb[2]
+            print(str(normal_vec[0])+'x'+yplus+str(normal_vec[1])+'y'+zplus+str(normal_vec[2])+'z = '+str(n))
+            break
+            #這裡設計方程式 將反射點帶入檢查會不會在方程式上且在兩點間
+            #if np.array_equal(vecab,vecbc):
+            #    print('三點共線')
+        except(IndexError,ValueError,TypeError):
+            print('您輸入的值有誤，請檢查點和向量有無包含三軸值且使用,或空白鍵分隔')
             continue
         
-    except(IndexError,ValueError,TypeError):
-        print('您輸入的值有誤，請檢查點和向量有無包含三軸值且使用,或空白鍵分隔')
-        continue
-    vecab = np.array([pointb[0]-pointa[0],pointb[1]-pointa[1],pointb[2]-pointa[2]])
-    vecbc = np.array([pointc[0]-pointb[0],pointc[1]-pointb[1],pointc[2]-pointb[2]])
-    distanceab = math.sqrt(((pointb[0]-pointa[0])**2)+((pointb[1]-pointa[1])**2)+((pointb[2]-pointa[2])**2))
-    distancebc = math.sqrt(((pointc[0]-pointb[0])**2)+((pointc[1]-pointb[1])**2)+((pointc[2]-pointb[2])**2))
-    lcm = math.lcm(distanceab,distancebc) #!!float的問題!!
-    m1 = lcm//distanceab
-    m2 = lcm//distancebc
-    mvecab = vecab*m1
-    mvecbc = vecbc*m2
-    normal_vec = vecab+vecbc
-    if normal_vec[0] < 0:
-        normal_vec = -normal_vec
-    cfpv = math.gcd(normal_vec[0],normal_vec[1],normal_vec[2])
-    npv = normal_vec//cfpv
-    yplus = '+'
-    zplus = '+'
-    if npv[1]<0 :
-        yplus = ''
-    if npv[2]<0 :
-        zplus = ''
-    n = normal_vec[0]*pointb[0]+normal_vec[1]*pointb[1]+normal_vec[2]*pointb[2]
-    print(str(normal_vec[0])+'x'+yplus+str(normal_vec[1])+'y'+zplus+str(normal_vec[2])+'z =  '+str(n))
-    break
-#兩方程式求法向量!
-'''while True:
-    inputeq1 = input('請輸入方程式E1: ')
-    inputeq2 = input('請輸入方程式E2: ')
-    try:
-        eq1 = [re.split(r'[xyz]+',inputeq1)]
-        eq2 = [re.split(r'[xyz]+',inputeq2)]
-        v1 = [0 if item in ('','+','-') else item for item in eq1[:3]]
-        v2 = [0 if item in ('','+','-') else item for item in eq2[:3]]
-        if len(v1) != 3 or len(v2) != 3:
-            raise IndexError
-    except (IndexError,ValueError):
-        print('您輸入的方程式有誤，請檢查後再次輸入\nE1: ',inputeq1,'/n E2: ',inputeq2)
-        continue
-    n = np.cross(v1,v2)
-    if n[0] < 0:
-        n = -n
-    print('法向量為: (',n[0],',',n[1],',',n[2],')')'''
+#兩方程式求法向量
+def two_eqation_n():
+    while True:
+        inputeq1 = input('請輸入方程式E1(係數若為1跟0仍需打出係數 且常數放右邊)\n: ')
+        inputeq2 = input('請輸入方程式E2(係數若為1跟0仍需打出係數 且常數放右邊)\n: ')
+        try:
+            if 'x' not in inputeq1 or 'y' not in inputeq1 or 'z' not in inputeq1:
+                raise IndexError
+            elif 'x' not in inputeq2 or 'y' not in inputeq2 or 'z' not in inputeq2:
+                raise IndexError
+            else:
+                pass
+            eq1 =  re.split(r'[xyz]+',inputeq1)
+            eq2 =  re.split(r'[xyz]+',inputeq2)
+            vec1 = np.array([int(ie) for ie in eq1[:3]])
+            vec2 = np.array([int(ie) for ie in eq2[:3]])
+            if np.array_equal(vec1,vec2):
+                print('兩方程式方向向量一致')
+                break
+            normal_vec = np.cross(vec1,vec2)
+            if normal_vec[0] <0:
+                normal_vec = normal_vec*-1
+            print('兩方程式之法向量為: ',normal_vec)
+        except (IndexError,ValueError,TypeError):
+            print('您輸入的方程式有誤，請檢查後再次輸入\nE1: ',inputeq1,'\nE2: ',inputeq2)
+            continue
 
-
-
-#空間中點與面之距離(方程式)
-'''while True:
-    input_point = input('請輸入點座標，以,或空白分隔: ')
-    input_planeeq = input('請輸入平面一般式: ')
-    try:
-        point = [int(ip) for ip in re.split(r'[\s,]+',input_point)]
-        a,b,c = 
-        if len(point) != 3:
-            raise IndexError
-    except ValueError:
-        print('您輸入的值有誤，請檢查點是否有包含xyz三軸且有使用空白間或逗號分隔 \n點: (',input_point,')')
-        continue
-    except IndexError:
-        print('您輸入的值有誤，請檢查點是否有包含xyz三軸且有使用空白間或逗號分隔 \n點: (',input_point,')')
-        continue
-#拆分方程式 若缺xyz要賦abc=0 直接用re.spilt(r'[xyz=]+')就好 再轉int '''
-
-
-
-#兩向量公垂線 *要輸入方程式
-
+#點面距
+def distance_point_flat():
+    while True:
+        input_point = input('請輸入點座標(以,或空白分隔): ')
+        input_line = input('請輸入平面一般式(係數若為1跟0仍需打出係數 且常數放左邊)\n: ')
+        try:
+            point = [int(ip) for ip in re.split(r'[\s,]+',input_point)]
+            if len(point) != 3:
+                raise IndexError
+            line = re.split(r'[xyz=]+',input_line)
+            coef = [int(il) for il in line[:4]]
+            num = abs(point[0]*coef[0]+point[1]*coef[1]+point[2]*coef[2]+coef[3])
+            den = math.sqrt(coef[0]**2+coef[1]**2+coef[2]**2)
+            if den.is_integer():
+                distance = num/den
+                if distance.is_integer():
+                    print(int(distance))
+                else:
+                    print(str(num)+'/'+str(int(den)))
+            else:
+                distance = str(num)+'/'+'√￣'+str(coef[0]**2+coef[1]**2+coef[2]**2)
+                print(distance)
+            break
+        except (IndexError,ValueError,TypeError):
+            print('您輸入的值有誤，請檢查後再次輸入\n點座標: ',input_point,'\n平面一般式: ',input_line)
+            continue    
