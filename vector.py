@@ -78,9 +78,9 @@ def point_normalvrctor():
         input_normal_vector = input('請輸入垂直平面的向量(以,或空白分隔): ')
         try:
             point = [int(ip) for ip in re.split(r'[\s,]+',input_point)]
+            n = np.array([int(inv) for inv in re.split(r'[\s,]+',input_normal_vector)])
             if len(point) != 3 or len(n) != 3: #檢查輸入值是否少於或多於3個
                 raise IndexError
-            n = np.array([int(inv) for inv in re.split(r'[\s,]+',input_normal_vector)])
             if np.array_equal(n,[0,0,0]) :
                 print('零向量無法計算平面')
                 break
@@ -110,13 +110,13 @@ def two_point_vector():
         try:
             pointa = [int(ipa) for ipa in re.split(r'[\s,]+',input_pointa)]
             pointb = [int(ipb) for ipb in re.split(r'[\s,]+',input_pointb)]
-            if len(pointa) != 3 or len(pointb) != 3 or len(v) != 3:
-                raise IndexError
             if input_pointa == input_pointb:
                 print('不可有相同的點\n')
                 continue
             vecab = np.array([pointb[0]-pointa[0],pointb[1]-pointa[1],pointb[2]-pointa[2]]) #取得ab向量
             v = np.array([int(iv) for iv in re.split(r'[\s,]+',input_vector)]) #將轉成list(int)的值變成向量值
+            if len(pointa) != 3 or len(pointb) != 3 or len(v) != 3:
+                raise IndexError
             if np.array_equal(v,[0,0,0]):
                 print('零向量無法計算平面')
                 break
@@ -158,9 +158,14 @@ def area_of_parallelongram():
             if np.array_equal(crossab,[0,0,0]):
                 print('兩向量平行，無法計算面積')
                 break
-            area = np.linalg.norm(crossab)
-            print('面積為: ',area)
-            break
+            x = (crossab[0]**2+crossab[1]**2+crossab[2]**2)
+            area = math.sqrt(x)
+            if area.is_integer():
+                print('面積為: '+str(area))
+                break
+            else:
+                print('面積為:√'+str(x))
+                break
         except (IndexError,ValueError,TypeError):
             print('您輸入的向量有誤，請檢查向量是否包含三軸且使用,或空白鍵分隔')
             continue
@@ -183,9 +188,23 @@ def area_of_triangle():
             if np.array_equal(crossab,[0,0,0]):
                 print('兩向量平行，無法計算面積')
                 break
-            area = np.linalg.norm(crossab)/2
-            print('三角形面積為: ',area)
-            break
+            x = float(crossab[0]**2+crossab[1]**2+crossab[2]**2)
+            area = math.sqrt(x)
+            if area.is_integer():
+                triarea = area/2
+                if triarea.is_integer():
+                    print('面積為: '+str(triarea))
+                else:
+                    print('面積為: '+str(area)+'/2')
+                break
+            else:
+                num = x/4
+                if num.is_integer():
+                    print('面積為:√'+str(num))
+                    break
+                else:
+                    print('面積為:√'+str(x)+'/2')
+                    break
         except (IndexError,ValueError,TypeError):
             print('您輸入的向量有誤，請檢查向量是否包含三軸且使用,或空白鍵分隔')
             continue
@@ -235,35 +254,36 @@ def mirror():
             if pointa == pointb or pointb == pointc or pointa == pointc:
                 print('有兩點相同，請檢查輸入值是否有誤')
                 continue
-            vecab = np.array([pointb[0]-pointa[0],pointb[1]-pointa[1],pointb[2]-pointa[2]])
+            vecba = np.array([pointa[0]-pointb[0],pointa[1]-pointb[1],pointa[2]-pointb[2]])
             vecbc = np.array([pointc[0]-pointb[0],pointc[1]-pointb[1],pointc[2]-pointb[2]])
-            distanceab = math.sqrt(((pointb[0]-pointa[0])**2)+((pointb[1]-pointa[1])**2)+((pointb[2]-pointa[2])**2))
+            distanceba = math.sqrt(((pointb[0]-pointa[0])**2)+((pointb[1]-pointa[1])**2)+((pointb[2]-pointa[2])**2))
             distancebc = math.sqrt(((pointc[0]-pointb[0])**2)+((pointc[1]-pointb[1])**2)+((pointc[2]-pointb[2])**2))
-            if distanceab == 0 or distancebc == 0:
+            if distanceba == 0 or distancebc == 0:
                 print('兩點距離不能為0')
                 continue
-            lcm = math.lcm(int(distanceab),int(distancebc)) 
-            m1 = lcm//distanceab
+            lcm = math.lcm(int(distanceba),int(distancebc)) 
+            m1 = lcm//distanceba
             m2 = lcm//distancebc
-            mvecab = vecab*m1
+            mvecba = vecba*m1
             mvecbc = vecbc*m2
-            normal_vec = mvecab+mvecbc
+            normal_vec = mvecba+mvecbc
             if normal_vec[0] < 0:
                 normal_vec = -normal_vec
-            cfpv = math.gcd(normal_vec[0],normal_vec[1],normal_vec[2])
-            npv = normal_vec//cfpv
+            cfpv = math.gcd(int(normal_vec[0]),int(normal_vec[1]),int(normal_vec[2]))
+            npv = normal_vec.astype(int)//cfpv
             yplus = '+'
             zplus = '+'
             if npv[1]<0 :
                 yplus = ''
             if npv[2]<0 :
                 zplus = ''
-            n = normal_vec[0]*pointb[0]+normal_vec[1]*pointb[1]+normal_vec[2]*pointb[2]
-            print(str(normal_vec[0])+'x'+yplus+str(normal_vec[1])+'y'+zplus+str(normal_vec[2])+'z = '+str(n))
+            n = npv[0]*pointb[0]+npv[1]*pointb[1]+npv[2]*pointb[2]
+            print(str(npv[0])+'x'+yplus+str(npv[1])+'y'+zplus+str(npv[2])+'z = '+str(n))
             break
         except(IndexError,ValueError,TypeError):
             print('您輸入的值有誤，請檢查點和向量有無包含三軸值且使用,或空白鍵分隔')
             continue
+        
         
 #兩方程式求法向量
 def two_eqation_n():
@@ -275,8 +295,6 @@ def two_eqation_n():
                 raise IndexError
             elif 'x' not in inputeq2 or 'y' not in inputeq2 or 'z' not in inputeq2:
                 raise IndexError
-            else:
-                pass
             eq1 =  re.split(r'[xyz]+',inputeq1)
             eq2 =  re.split(r'[xyz]+',inputeq2)
             vec1 = np.array([int(ie) for ie in eq1[:3]])
@@ -288,6 +306,7 @@ def two_eqation_n():
             if normal_vec[0] <0:
                 normal_vec = normal_vec*-1
             print('兩方程式之法向量為: ',normal_vec)
+            break
         except (IndexError,ValueError,TypeError):
             print('您輸入的方程式有誤，請檢查後再次輸入\nE1: ',inputeq1,'\nE2: ',inputeq2)
             continue
